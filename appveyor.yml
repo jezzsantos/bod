@@ -1,0 +1,59 @@
+version: 1.0.{build}
+image: Visual Studio 2019
+configuration: Release
+environment:
+  SERVICESTACK_LICENSE:
+    secure: 5zYTw+1lLlf6ydh05spg4huc/S2VUb+Ka5b3etCB8bvVQTAlMabBx7mcTxadOnCJo4EwPPc94TyDFEhJ031XcSds4I6NL3TEVzcY1y73tibAYaejOgWs5kNzcIjLbemn/SqHw7bvrmUSJVs2M9UFYkqyv/GaDO7O/j/VrZSZOB6KwW4QHanV7RDZpSnepoQ5fPXatIbimF3KXGTQGMHcffTBjpBsvfzOOc05fXtuvfLlv8eG3fqOvN7IUlyC9EOCBgDr6JjJFKmm9CbPNChkaLnyieMvWf2GRUSZaOjV2MmBvdSmDsIrNW26rUS+K4V5+NQ2gGWkxJApOMsg6+QvVf7UGR4npVkgkelYSW1QMVfTWxNCbLd4bEi8PRkCgxLSM07VWvNrFBPUZWkEQtNCaBHhhvbtsBOKr0CpEPJKFO4L+p7AG6wDhPED7vk3g81p
+  matrix:
+  - test_type: Unit.Testing
+    test_assemblies: src\Api.Interfaces.UnitTests\bin\$env:CONFIGURATION\netcoreapp3.1\Api.Interfaces.UnitTests.dll;src\ClinicsApi.UnitTests\bin\$env:CONFIGURATION\netcoreapp3.1\ClinicsApi.UnitTests.dll;src\ClinicsApplication.UnitTests\bin\$env:CONFIGURATION\netcoreapp3.1\ClinicsApplication.UnitTests.dll;src\ClinicsDomain.UnitTests\bin\$env:CONFIGURATION\netcoreapp3.1\ClinicsDomain.UnitTests.dll;src\Domain.Interfaces.UnitTests\bin\$env:CONFIGURATION\netcoreapp3.1\Domain.Interfaces.UnitTests.dll;src\PersonsApi.UnitTests\bin\$env:CONFIGURATION\netcoreapp3.1\PersonsApi.UnitTests.dll;src\PersonsApplication.UnitTests\bin\$env:CONFIGURATION\netcoreapp3.1\PersonsApplication.UnitTests.dll;src\PersonsDomain.UnitTests\bin\$env:CONFIGURATION\netcoreapp3.1\PersonsDomain.UnitTests.dll;src\Storage.UnitTests\bin\$env:CONFIGURATION\netcoreapp3.1\Storage.UnitTests.dll
+    test_category: Unit
+    test_settings:
+  - test_type: Integration.Testing
+    test_assemblies: src\ClinicsApi.IntegrationTests\bin\$env:CONFIGURATION\netcoreapp3.1\ClinicsApi.IntegrationTests.dll;src\PersonsApi.IntegrationTests\bin\$env:CONFIGURATION\netcoreapp3.1\PersonsApi.IntegrationTests.dll;src\Storage.IntegrationTests\bin\$env:CONFIGURATION\netcoreapp3.1\Storage.IntegrationTests.dll
+    test_category: Integration
+    test_settings: 
+  - test_type: Integration.Testing.Web
+    test_assemblies: src\ClinicsApi.IntegrationTests\bin\$env:CONFIGURATION\netcoreapp3.1\ClinicsApi.IntegrationTests.dll;src\PersonsApi.IntegrationTests\bin\$env:CONFIGURATION\netcoreapp3.1\PersonsApi.IntegrationTests.dll;src\Storage.IntegrationTests\bin\$env:CONFIGURATION\netcoreapp3.1\Storage.IntegrationTests.dll
+    test_category: Integration.Web
+  - test_type: Integration.Testing.Storage
+    test_assemblies: src\ClinicsApi.IntegrationTests\bin\$env:CONFIGURATION\netcoreapp3.1\ClinicsApi.IntegrationTests.dll;src\PersonsApi.IntegrationTests\bin\$env:CONFIGURATION\netcoreapp3.1\PersonsApi.IntegrationTests.dll;src\Storage.IntegrationTests\bin\$env:CONFIGURATION\netcoreapp3.1\Storage.IntegrationTests.dll
+    test_category: Integration.Storage
+matrix:
+    fast_finish: false
+install:
+- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/jezzsantos/bod/main/ci/set-version-from-globalassemblyinfo-assemblyinformationalversion.ps1'))
+- ps: nuget install redis-64 -excludeversion
+- ps: redis-64\tools\redis-server.exe --service-install
+- ps: redis-64\tools\redis-server.exe --service-start
+before_build:
+- cmd: nuget restore src\Bod.sln
+- cmd: xcopy "src\Storage.IntegrationTests\appsettings.CI.json" "src\Storage.IntegrationTests\appsettings.json" /R /Y
+build:
+  project: src\Bod.sln
+  verbosity: minimal
+test_script:
+- ps: >-
+    $env:test_assemblies.Split(';') | % {
+      $assemblyName = $ExecutionContext.InvokeCommand.ExpandString($_)
+
+      if ($env:test_settings){
+        &vstest.console $assemblyName /InIsolation /logger:AppVeyor /settings:$env:test_settings /testcasefilter:`"TestCategory=$env:test_category`"
+        } else {
+        &vstest.console $assemblyName /InIsolation /logger:AppVeyor /testcasefilter:`"TestCategory=$env:test_category`"
+        }
+
+      if ($global:LASTEXITCODE -ne 0){
+        $host.SetShouldExit($global:LASTEXITCODE)
+        break
+      }
+    }
+artifacts:
+- path: '**\Bod.*.nupkg'
+deploy:
+- provider: NuGet
+  api_key:
+    secure: IOhQyRtNmDLFQCHDAlihYB9gVTqimDBKBPEcjSvJEwRF7Hlkxncz3a+FEWsKCSJv
+  skip_symbols: true
+  on:
+    branch: master

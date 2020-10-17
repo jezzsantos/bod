@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <RootNamespace>Storage.Redis</RootNamespace>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Storage\Storage.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="ServiceStack.Redis.Core" Version="5.9.0" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <RootNamespace>ApplicationServices</RootNamespace>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="ServiceStack.Client" Version="5.8.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Application.Common\Application.Common.csproj" />
+    </ItemGroup>
+
+</Project>
