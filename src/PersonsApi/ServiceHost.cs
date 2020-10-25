@@ -22,7 +22,7 @@ namespace PersonsApi
     {
         private static readonly Assembly[] AssembliesContainingServicesAndDependencies = {typeof(Startup).Assembly};
 
-        public ServiceHost() : base("MyPersonsApi", AssembliesContainingServicesAndDependencies)
+        public ServiceHost() : base("Persons API", AssembliesContainingServicesAndDependencies)
         {
         }
 

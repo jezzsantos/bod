@@ -30,7 +30,7 @@ namespace ClinicsApi
         private static IRepository repository;
         private IReadModelSubscription readModelSubscription;
 
-        public ServiceHost() : base("MyCarsApi", AssembliesContainingServicesAndDependencies)
+        public ServiceHost() : base("Clinics API", AssembliesContainingServicesAndDependencies)
         {
         }
 
