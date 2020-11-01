@@ -26,7 +26,7 @@ namespace ClinicsApi.UnitTests
         [TestMethod]
         public void WhenRegisterAllEntities_ThenAllEntitiesRegistered()
         {
-            this.domainFactory.RegisterDomainTypesFromAssemblies(typeof(ClinicEntity).Assembly);
+            this.domainFactory.RegisterDomainTypesFromAssemblies(ServiceHost.AssembliesContainingDomainEntities);
         }
     }
 }

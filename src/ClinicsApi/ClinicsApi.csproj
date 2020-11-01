@@ -19,7 +19,7 @@
     <ProjectReference Include="..\ClinicsApplication\ClinicsApplication.csproj" />
     <ProjectReference Include="..\ClinicsStorage\ClinicsStorage.csproj" />
     <ProjectReference Include="..\Api.Interfaces\Api.Interfaces.csproj" />
-    <ProjectReference Include="..\ServiceClients\ServiceClients.csproj" />
+    <ProjectReference Include="..\InfrastructureServices\InfrastructureServices.csproj" />
     <ProjectReference Include="..\Storage.Azure\Storage.Azure.csproj" />
     <ProjectReference Include="..\Storage.ReadModels\Storage.ReadModels.csproj" />
   </ItemGroup>

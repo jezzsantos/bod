@@ -21,7 +21,11 @@ namespace PersonsApi
     public class ServiceHost : AppHostBase
     {
         private static readonly Assembly[] AssembliesContainingServicesAndDependencies = {typeof(Startup).Assembly};
-
+        public static readonly Assembly[] AssembliesContainingDomainEntities =
+        {
+            typeof(EntityEvent).Assembly,
+            typeof(PersonEntity).Assembly
+        };
         public ServiceHost() : base("Persons API", AssembliesContainingServicesAndDependencies)
         {
         }
@@ -41,8 +45,7 @@ namespace PersonsApi
             container.AddSingleton<IDependencyContainer>(new FuncDependencyContainer(container));
             container.AddSingleton<IIdentifierFactory, PersonIdentifierFactory>();
             container.AddSingleton<IDomainFactory>(c =>
-                DomainFactory.CreateRegistered(c.Resolve<IDependencyContainer>(), typeof(EntityEvent).Assembly,
-                    typeof(PersonEntity).Assembly));
+                DomainFactory.CreateRegistered(c.Resolve<IDependencyContainer>(), AssembliesContainingDomainEntities));
             container.AddSingleton<IPersonStorage>(c =>
                 new PersonStorage(c.Resolve<ILogger>(), c.Resolve<IDomainFactory>(),
                     AzureCosmosSqlApiRepository.FromAppSettings(c.Resolve<IAppSettings>(), "Production")));

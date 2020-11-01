@@ -26,7 +26,7 @@ namespace PersonsApi.UnitTests
         [TestMethod]
         public void WhenRegisterAllEntities_ThenAllEntitiesRegistered()
         {
-            this.domainFactory.RegisterDomainTypesFromAssemblies(typeof(PersonEntity).Assembly);
+            this.domainFactory.RegisterDomainTypesFromAssemblies(ServiceHost.AssembliesContainingDomainEntities);
         }
     }
 }

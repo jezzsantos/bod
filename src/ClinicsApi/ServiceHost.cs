@@ -10,9 +10,9 @@ using ClinicsStorage;
 using Domain.Interfaces;
 using Domain.Interfaces.Entities;
 using Funq;
+using InfrastructureServices;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using ServiceClients;
 using ServiceStack;
 using ServiceStack.Configuration;
 using ServiceStack.Validation;
@@ -27,6 +27,11 @@ namespace ClinicsApi
     public class ServiceHost : AppHostBase
     {
         private static readonly Assembly[] AssembliesContainingServicesAndDependencies = {typeof(Startup).Assembly};
+        public static readonly Assembly[] AssembliesContainingDomainEntities =
+        {
+            typeof(EntityEvent).Assembly,
+            typeof(ClinicEntity).Assembly
+        };
         private static IRepository repository;
         private IReadModelSubscription readModelSubscription;
 
@@ -55,8 +60,7 @@ namespace ClinicsApi
             container.AddSingleton<IDependencyContainer>(new FuncDependencyContainer(container));
             container.AddSingleton<IIdentifierFactory, ClinicIdentifierFactory>();
             container.AddSingleton<IDomainFactory>(c => DomainFactory.CreateRegistered(
-                c.Resolve<IDependencyContainer>(), typeof(EntityEvent).Assembly,
-                typeof(ClinicEntity).Assembly));
+                c.Resolve<IDependencyContainer>(), AssembliesContainingDomainEntities));
             container.AddSingleton<IEventStreamStorage<ClinicEntity>>(c =>
                 new GeneralEventStreamStorage<ClinicEntity>(c.Resolve<ILogger>(), c.Resolve<IDomainFactory>(),
                     ResolveRepository(c)));
