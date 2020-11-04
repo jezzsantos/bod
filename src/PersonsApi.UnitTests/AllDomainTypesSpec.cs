@@ -3,7 +3,6 @@ using Castle.Core.Logging;
 using Domain.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using PersonsDomain;
 
 namespace PersonsApi.UnitTests
 {

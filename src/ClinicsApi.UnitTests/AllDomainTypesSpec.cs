@@ -1,5 +1,4 @@
 ﻿using Api.Common;
-using ClinicsDomain;
 using Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
